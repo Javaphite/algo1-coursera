@@ -1,6 +1,7 @@
 package com.javaphite.algo1.percolation;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 
@@ -28,6 +29,16 @@ public class PercolationTest {
     void shouldPercolateOnInput10(String filename, String expected) {
         setUpFromFile(TEST_INPUTS_PATH + filename);
         boolean expectedResult = Boolean.parseBoolean(expected);
+
+        boolean actualResult = sut.percolates();
+
+        Assertions.assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void shouldPercolateOnInput10() {
+        setUpFromFile(TEST_INPUTS_PATH + "input2.txt");
+        boolean expectedResult = true;
 
         boolean actualResult = sut.percolates();
 

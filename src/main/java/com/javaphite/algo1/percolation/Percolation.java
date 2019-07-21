@@ -6,6 +6,8 @@ import java.util.Arrays;
 
 public class Percolation {
 
+    private static final int SITES_OFFSET = 2;
+
     private static final int BLOCKED = 0;
 
     private static final int OPENED = 1;
@@ -15,6 +17,10 @@ public class Percolation {
     private int[] sites;
 
     private WeightedQuickUnionUF unionFind;
+
+    private int sourceSite = 0;
+
+    private int destinationSite = 1;
 
     private int totalSitesNumber;
 
@@ -26,24 +32,25 @@ public class Percolation {
 
     public Percolation(int n) {
         systemSize = n;
-        totalSitesNumber = n * n;
+        totalSitesNumber = SITES_OFFSET + (n * n);
         sites = new int[totalSitesNumber];
         unionFind = new WeightedQuickUnionUF(totalSitesNumber);
         Arrays.fill(sites, BLOCKED);
+        sites[sourceSite] = OPENED;
+        sites[destinationSite] = OPENED;
     }
 
     public void open(int row, int col) {
         if (!isOpen(row, col)) {
-            // Opened sites in top row are always full
-            sites[getFlatIndex(row, col)] = row == 1 ? FULL : OPENED;
-            connectWithNeighbors(row, col);
+            sites[getFlatIndex(row, col)] = OPENED;
+            updateSiteConnections(row, col);
             openSitesNumber++;
         }
     }
 
     public boolean isOpen(int row, int col) {
         int flatIndex = getFlatIndex(row, col);
-        return sites[flatIndex] >= OPENED;
+        return sites[flatIndex] == OPENED;
     }
 
     public boolean isFull(int row, int col) {
@@ -51,15 +58,8 @@ public class Percolation {
             return false;
         }
 
-        int flatIndex = getFlatIndex(row, col);
-        if (sites[flatIndex] == FULL) {
+        if (unionFind.connected(getFlatIndex(row, col), sourceSite)) {
             return true;
-        }
-
-        for (int i = 0; i < systemSize; i++) {
-            if (unionFind.connected(i, flatIndex)) {
-                return true;
-            }
         }
         return false;
     }
@@ -68,50 +68,40 @@ public class Percolation {
         return openSitesNumber;
     }
 
-    // System percolates if any site in bottom row is full
     public boolean percolates() {
-        // Once system become percolated - it should never
-        // get back to previous state as far as we can only open sites
-        // so cache that state to avoid repeated evaluations
-        if (systemPercolated) {
-            return systemPercolated;
-        }
-
-        if (anyFull(systemSize)) {
-            systemPercolated = true;
-            return systemPercolated;
-        }
-        return systemPercolated;
-    }
-
-    private boolean anyFull(int row) {
-        for (int col = 1; col <= systemSize; col++) {
-            if (isFull(row, col)) {
-                return true;
-            }
-        }
-        return false;
+        return unionFind.connected(sourceSite, destinationSite);
     }
 
     private int getFlatIndex(int row, int col) {
-        return (row - 1) * systemSize + (col - 1);
+        return SITES_OFFSET + (row - 1) * systemSize + (col - 1);
+    }
+
+    private void updateSiteConnections(int row, int col) {
+        if (row == 1) {
+            unionFind.union(getFlatIndex(row, col), sourceSite);
+        }
+        connectWithNeighbors(row, col);
+        checkAttachedToDestination(row, col);
     }
 
     private void connectWithNeighbors(int row, int col) {
-         for (Neighbour neighbour : Neighbour.values()) {
+        for (Neighbour neighbour : Neighbour.values()) {
             int neighbourRow = row + neighbour.rowOffset;
             int neighbourCol = col + neighbour.columnOffset;
 
-            if (!isValidIndex(neighbourRow) || !isValidIndex(neighbourCol)) {
-                continue;
+            if (isValidIndex(neighbourRow) && isValidIndex(neighbourCol)) {
+                if (isOpen(neighbourRow, neighbourCol)) {
+                    int neighbourFlatIndex = getFlatIndex(neighbourRow, neighbourCol);
+                    int flatIndex = getFlatIndex(row, col);
+                    unionFind.union(flatIndex, neighbourFlatIndex);
+                }
             }
+        }
+    }
 
-            if (isOpen(neighbourRow, neighbourCol)) {
-                int neighbourFlatIndex = getFlatIndex(neighbourRow, neighbourCol);
-                int flatIndex = getFlatIndex(row, col);
-                unionFind.union(flatIndex, neighbourFlatIndex);
-                sites[flatIndex] = sites[neighbourFlatIndex];
-            }
+    private void checkAttachedToDestination(int row, int col) {
+        if (row == systemSize) {
+            unionFind.union(getFlatIndex(row, col), destinationSite);
         }
     }
 
