@@ -12,8 +12,6 @@ public class Percolation {
 
     private static final int OPENED = 1;
 
-    private static final int FULL = 2;
-
     private int[] sites;
 
     private WeightedQuickUnionUF unionFind;
@@ -22,22 +20,21 @@ public class Percolation {
 
     private int destinationSite = 1;
 
-    private int totalSitesNumber;
-
     private int openSitesNumber;
 
     private int systemSize;
 
-    private boolean systemPercolated;
-
     public Percolation(int n) {
+        if (n <= 0) {
+            throw new IllegalArgumentException("System size could not be less or equal to 0!");
+        }
+
         systemSize = n;
-        totalSitesNumber = SITES_OFFSET + (n * n);
+        int totalSitesNumber = SITES_OFFSET + (n * n);
         sites = new int[totalSitesNumber];
         unionFind = new WeightedQuickUnionUF(totalSitesNumber);
+
         Arrays.fill(sites, BLOCKED);
-        sites[sourceSite] = OPENED;
-        sites[destinationSite] = OPENED;
     }
 
     public void open(int row, int col) {
@@ -49,6 +46,8 @@ public class Percolation {
     }
 
     public boolean isOpen(int row, int col) {
+        validateCoordinates(row, col);
+
         int flatIndex = getFlatIndex(row, col);
         return sites[flatIndex] == OPENED;
     }
@@ -77,11 +76,21 @@ public class Percolation {
     }
 
     private void updateSiteConnections(int row, int col) {
+        connectFirstRowToTop(row, col);
+        connectWithNeighbors(row, col);
+        connectLastRowToBottom(row, col);
+    }
+
+    private void connectFirstRowToTop(int row, int col) {
         if (row == 1) {
             unionFind.union(getFlatIndex(row, col), sourceSite);
         }
-        connectWithNeighbors(row, col);
-        checkAttachedToDestination(row, col);
+    }
+
+    private void connectLastRowToBottom(int row, int col) {
+        if (row == systemSize) {
+            unionFind.union(getFlatIndex(row, col), destinationSite);
+        }
     }
 
     private void connectWithNeighbors(int row, int col) {
@@ -89,25 +98,23 @@ public class Percolation {
             int neighbourRow = row + neighbour.rowOffset;
             int neighbourCol = col + neighbour.columnOffset;
 
-            if (isValidIndex(neighbourRow) && isValidIndex(neighbourCol)) {
-                if (isOpen(neighbourRow, neighbourCol)) {
-                    int neighbourFlatIndex = getFlatIndex(neighbourRow, neighbourCol);
-                    int flatIndex = getFlatIndex(row, col);
-                    unionFind.union(flatIndex, neighbourFlatIndex);
-                }
+            if (isValidIndex(neighbourRow)
+                    && isValidIndex(neighbourCol)
+                    && isOpen(neighbourRow, neighbourCol)) {
+                int neighbourFlatIndex = getFlatIndex(neighbourRow, neighbourCol);
+                int flatIndex = getFlatIndex(row, col);
+                unionFind.union(flatIndex, neighbourFlatIndex);
             }
         }
     }
 
-    private void checkAttachedToDestination(int row, int col) {
-        if (row == systemSize) {
-            unionFind.union(getFlatIndex(row, col), destinationSite);
-        }
+    public static void main(String[] args) {
     }
 
-    // test client (optional)
-    public static void main(String[] args) {
-
+    private void validateCoordinates(int row, int col) {
+        if (!isValidIndex(row) || !isValidIndex(col)) {
+            throw new IllegalArgumentException("Invalid site coordinates: row =" + row + ", col= " + col);
+        }
     }
 
     private boolean isValidIndex(int index) {
