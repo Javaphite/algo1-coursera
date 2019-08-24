@@ -2,7 +2,6 @@ package com.javaphite.algo1.percolation;
 
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
-// TODO: backwash fix
 public class Percolation {
 
     private static final int SITES_OFFSET = 2;
@@ -23,6 +22,8 @@ public class Percolation {
 
     private WeightedQuickUnionUF unionFind;
 
+    private WeightedQuickUnionUF visualUnionFind;
+
     public Percolation(int n) {
         if (n <= 0) {
             throw new IllegalArgumentException("System size could not be less or equal to 0!");
@@ -32,6 +33,7 @@ public class Percolation {
         int totalSitesNumber = SITES_OFFSET + (n * n);
         sites = new boolean[totalSitesNumber];
         unionFind = new WeightedQuickUnionUF(totalSitesNumber);
+        visualUnionFind = new WeightedQuickUnionUF(totalSitesNumber);
 
         for (int i = 0; i < totalSitesNumber; i++) {
             sites[i] = BLOCKED;
@@ -58,7 +60,7 @@ public class Percolation {
             return false;
         }
 
-        if (unionFind.connected(getFlatIndex(row, col), SOURCE_SITE)) {
+        if (visualUnionFind.connected(getFlatIndex(row, col), SOURCE_SITE)) {
             return true;
         }
         return false;
@@ -85,6 +87,7 @@ public class Percolation {
     private void connectFirstRowToTop(int row, int col) {
         if (row == 1) {
             unionFind.union(getFlatIndex(row, col), SOURCE_SITE);
+            visualUnionFind.union(getFlatIndex(row, col), SOURCE_SITE);
         }
     }
 
@@ -105,6 +108,7 @@ public class Percolation {
                 int neighbourFlatIndex = getFlatIndex(neighbourRow, neighbourCol);
                 int flatIndex = getFlatIndex(row, col);
                 unionFind.union(flatIndex, neighbourFlatIndex);
+                visualUnionFind.union(flatIndex, neighbourFlatIndex);
             }
         }
     }
