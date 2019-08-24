@@ -26,7 +26,7 @@ public class PercolationTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = TESTCASES_LIST_FILE)
-    void shouldPercolateOnInput10(String filename, String expected) {
+    void shouldReturnResultsAccordingToTestCaseList(String filename, String expected) {
         setUpFromFile(TEST_INPUTS_PATH + filename);
         boolean expectedResult = Boolean.parseBoolean(expected);
 
@@ -36,13 +36,20 @@ public class PercolationTest {
     }
 
     @Test
-    void shouldPercolateOnInput10() {
-        setUpFromFile(TEST_INPUTS_PATH + "input2.txt");
-        boolean expectedResult = true;
+    void methodsShouldThrowIllegalArgumentExceptionOnBadCoordinates() {
+        sut = new Percolation(5);
 
-        boolean actualResult = sut.percolates();
+        Assertions.assertAll(
+                () -> Assertions.assertThrows(IllegalArgumentException.class, () -> sut.open(10, 10)),
+                () -> Assertions.assertThrows(IllegalArgumentException.class, () -> sut.isOpen(10, 10)),
+                () -> Assertions.assertThrows(IllegalArgumentException.class, () -> sut.isFull(10, 10))
+        );
+    }
 
-        Assertions.assertEquals(expectedResult, actualResult);
+    @Test
+    void constructorShouldThrowIllegalArgumentExceptionForNonPositiveArgument() {
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new Percolation(0));
     }
 
     private void openSites(List<int[]> sites) {

@@ -2,27 +2,26 @@ package com.javaphite.algo1.percolation;
 
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
-import java.util.Arrays;
-
+// TODO: backwash fix
 public class Percolation {
 
     private static final int SITES_OFFSET = 2;
 
-    private static final int BLOCKED = 0;
+    private static final boolean BLOCKED = false;
 
-    private static final int OPENED = 1;
+    private static final boolean OPENED = true;
 
-    private int[] sites;
+    private static final int SOURCE_SITE = 0;
 
-    private WeightedQuickUnionUF unionFind;
+    private static final int DESTINATION_SITE = 1;
 
-    private int sourceSite = 0;
-
-    private int destinationSite = 1;
+    private final int systemSize;
 
     private int openSitesNumber;
 
-    private int systemSize;
+    private boolean[] sites;
+
+    private WeightedQuickUnionUF unionFind;
 
     public Percolation(int n) {
         if (n <= 0) {
@@ -31,10 +30,12 @@ public class Percolation {
 
         systemSize = n;
         int totalSitesNumber = SITES_OFFSET + (n * n);
-        sites = new int[totalSitesNumber];
+        sites = new boolean[totalSitesNumber];
         unionFind = new WeightedQuickUnionUF(totalSitesNumber);
 
-        Arrays.fill(sites, BLOCKED);
+        for (int i = 0; i < totalSitesNumber; i++) {
+            sites[i] = BLOCKED;
+        }
     }
 
     public void open(int row, int col) {
@@ -49,7 +50,7 @@ public class Percolation {
         validateCoordinates(row, col);
 
         int flatIndex = getFlatIndex(row, col);
-        return sites[flatIndex] == OPENED;
+        return sites[flatIndex];
     }
 
     public boolean isFull(int row, int col) {
@@ -57,7 +58,7 @@ public class Percolation {
             return false;
         }
 
-        if (unionFind.connected(getFlatIndex(row, col), sourceSite)) {
+        if (unionFind.connected(getFlatIndex(row, col), SOURCE_SITE)) {
             return true;
         }
         return false;
@@ -68,7 +69,7 @@ public class Percolation {
     }
 
     public boolean percolates() {
-        return unionFind.connected(sourceSite, destinationSite);
+        return unionFind.connected(SOURCE_SITE, DESTINATION_SITE);
     }
 
     private int getFlatIndex(int row, int col) {
@@ -83,13 +84,13 @@ public class Percolation {
 
     private void connectFirstRowToTop(int row, int col) {
         if (row == 1) {
-            unionFind.union(getFlatIndex(row, col), sourceSite);
+            unionFind.union(getFlatIndex(row, col), SOURCE_SITE);
         }
     }
 
     private void connectLastRowToBottom(int row, int col) {
         if (row == systemSize) {
-            unionFind.union(getFlatIndex(row, col), destinationSite);
+            unionFind.union(getFlatIndex(row, col), DESTINATION_SITE);
         }
     }
 
@@ -109,6 +110,7 @@ public class Percolation {
     }
 
     public static void main(String[] args) {
+        // No custom test client provided
     }
 
     private void validateCoordinates(int row, int col) {
