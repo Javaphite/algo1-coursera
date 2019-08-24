@@ -18,7 +18,6 @@ public class PercolationStats {
 
     private double[] trialResults;
 
-    // TODO: run simulation on creation?
     public PercolationStats(int n, int trials) {
         if (n <= 0 || trials <= 0) {
             throw new IllegalArgumentException("Not valid arguments: n=" + n + ", T=" + trials);
@@ -26,6 +25,8 @@ public class PercolationStats {
         this.trials = trials;
         this.trialResults = new double[trials];
         systemSize = n;
+
+        runSimulation();
     }
 
     public double mean() {
@@ -49,7 +50,6 @@ public class PercolationStats {
         int trials = Integer.parseInt(args[1]);
 
         PercolationStats stats = new PercolationStats(n, trials);
-        stats.runSimulation();
 
         StdOut.printf(MEAN_MESSAGE_TEMPLATE, stats.mean());
         StdOut.printf(STD_DEVIATION_MESSAGE_TEMPLATE, stats.stddev());
