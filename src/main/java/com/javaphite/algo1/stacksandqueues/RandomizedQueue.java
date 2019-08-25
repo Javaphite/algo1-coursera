@@ -10,10 +10,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     private ResizingArray<Item> queue;
 
-    public static final int DEFAULT_INITIAL_CAPACITY = 10;
+    private static final int DEFAULT_INITIAL_CAPACITY = 10;
 
     // construct an empty randomized queue
-    @SuppressWarnings("unchecked")
     public RandomizedQueue() {
         queue = new ResizingArray<>(DEFAULT_INITIAL_CAPACITY);
     }
@@ -65,12 +64,17 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
         RandomizedQueueIterator(ResizingArray<Item> items) {
             iterationOrder = new ResizingArray<>(items.size());
+            copyItemsInRandomOrder(items, iterationOrder);
+        }
 
-            int maxIndex = items.size();
-            for (int i = 0; i < maxIndex; i++) {
-                iterationOrder.add(items.get(i));
+        private void copyItemsInRandomOrder(final ResizingArray<Item> source, ResizingArray<Item> target) {
+            synchronized (this) {
+                for (int i = 0; i < source.size(); i++) {
+                    target.add(source.get(i));
+                }
             }
 
+            int maxIndex = target.size();
             for (int i = 0; i < maxIndex; i++) {
                 iterationOrder.swapElements(StdRandom.uniform(maxIndex), StdRandom.uniform(maxIndex));
             }
