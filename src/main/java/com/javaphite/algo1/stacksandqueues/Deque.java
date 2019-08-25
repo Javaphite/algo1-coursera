@@ -34,6 +34,10 @@ public class Deque<Item> implements Iterable<Item> {
      * New element becomes head of deque.
      */
     public void addFirst(Item item) {
+        if (null == item) {
+            throw new IllegalArgumentException();
+        }
+
         if (isEmpty()) {
             Node<Item> element = new Node<>(tail, null, item);
             head = element;
@@ -51,6 +55,10 @@ public class Deque<Item> implements Iterable<Item> {
      * New element becomes tail of deque.
      */
     public void addLast(Item item) {
+        if (null == item) {
+            throw new IllegalArgumentException();
+        }
+
         if (isEmpty()) {
             Node<Item> element = new Node<>(null, head, item);
             head = element;
@@ -114,6 +122,7 @@ public class Deque<Item> implements Iterable<Item> {
 
     /**
      * Testing client for Deque class. No special arguments required.
+     *
      * @param args ignored.
      */
     public static void main(String[] args) {

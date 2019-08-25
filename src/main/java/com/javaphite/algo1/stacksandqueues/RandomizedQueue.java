@@ -1,5 +1,6 @@
 package com.javaphite.algo1.stacksandqueues;
 
+import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.Iterator;
@@ -29,6 +30,10 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     // add the item
     public void enqueue(Item item) {
+        if (null == item) {
+            throw new IllegalArgumentException();
+        }
+
         queue.add(item);
     }
 
@@ -55,7 +60,17 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     // unit testing (required)
     public static void main(String[] args) {
-
+        RandomizedQueue<Character> queue = new RandomizedQueue<>();
+        if (queue.isEmpty()) {
+            queue.enqueue('A');
+            queue.enqueue('B');
+            StdOut.println(queue.dequeue());
+            queue.forEach(StdOut::println);
+            StdOut.println(queue.size());
+            StdOut.println(queue.sample());
+            Iterator<Character> iterator = queue.iterator();
+            iterator.forEachRemaining(StdOut::println);
+        }
     }
 
     private static class RandomizedQueueIterator<Item> implements Iterator<Item> {
@@ -99,6 +114,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
         @Override
         public Item next() {
+            if (0 == iterationOrder.size()) {
+                throw new NoSuchElementException();
+            }
             return iterationOrder.remove(0);
         }
     }
