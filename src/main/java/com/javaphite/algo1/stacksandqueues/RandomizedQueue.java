@@ -7,28 +7,39 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
+/**
+ * Queue implementation with random order of elements iteration.
+ */
 public class RandomizedQueue<Item> implements Iterable<Item> {
 
     private ResizingArray<Item> queue;
 
     private static final int DEFAULT_INITIAL_CAPACITY = 10;
 
-    // construct an empty randomized queue
+    /**
+     * Creates new empty randomized queue.
+     */
     public RandomizedQueue() {
         queue = new ResizingArray<>(DEFAULT_INITIAL_CAPACITY);
     }
 
-    // is the randomized queue empty?
+    /**
+     * Indicates if queue contains no elements.
+     */
     public boolean isEmpty() {
         return 0 == queue.size();
     }
 
-    // return the number of items on the randomized queue
+    /**
+     * Returns current number of elements in queue.
+     */
     public int size() {
         return queue.size();
     }
 
-    // add the item
+    /**
+     * Adds item to queue.
+     */
     public void enqueue(Item item) {
         if (null == item) {
             throw new IllegalArgumentException();
@@ -37,7 +48,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         queue.add(item);
     }
 
-    // remove and return a random item
+    /**
+     * Removes and returns a random item from queue
+     */
     public Item dequeue() {
         if (isEmpty()) {
             throw new NoSuchElementException("Queue is empty!");
@@ -45,7 +58,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         return queue.remove(StdRandom.uniform(size()));
     }
 
-    // return a random item (but do not remove it)
+    /**
+     * Returns a random item (but not removes it)
+     */
     public Item sample() {
         if (isEmpty()) {
             throw new NoSuchElementException("Queue is empty!");
@@ -53,12 +68,13 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         return queue.get(StdRandom.uniform(size()));
     }
 
-    // return an independent iterator over items in random order
+    /**
+     * Returns an independent iterator over items in random order
+     */
     public Iterator<Item> iterator() {
         return new RandomizedQueueIterator<>(queue);
     }
 
-    // unit testing (required)
     public static void main(String[] args) {
         RandomizedQueue<Character> queue = new RandomizedQueue<>();
         if (queue.isEmpty()) {
