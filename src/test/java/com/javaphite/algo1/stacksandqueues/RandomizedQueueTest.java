@@ -3,8 +3,6 @@ package com.javaphite.algo1.stacksandqueues;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Iterator;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -37,6 +35,13 @@ class RandomizedQueueTest {
         int finalSize = sut.size();
 
         assertEquals(initialSize - 1, finalSize);
+    }
+
+    @Test
+    void enqueueShouldWorkProperlyAfterDefaultCapacityReached() {
+        for (int i=0; i<10; i++) {
+            sut.enqueue(i);
+        }
     }
 
     @Test

@@ -1,5 +1,7 @@
 package com.javaphite.algo1.stacksandqueues;
 
+import edu.princeton.cs.algs4.StdOut;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
@@ -126,6 +128,16 @@ public class Deque<Item> implements Iterable<Item> {
      * @param args ignored.
      */
     public static void main(String[] args) {
+        Deque<Integer> intDeque = new Deque<>();
+        if (intDeque.isEmpty()) {
+            intDeque.addFirst(1);
+            intDeque.addLast(2);
+            intDeque.removeFirst();
+            intDeque.removeLast();
+            intDeque.addLast(100);
+            intDeque.iterator().forEachRemaining(StdOut::println);
+            StdOut.println(intDeque.size);
+        }
     }
 
     private static class DequeIterator<Item> implements Iterator<Item> {

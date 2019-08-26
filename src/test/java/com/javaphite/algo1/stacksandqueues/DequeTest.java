@@ -3,6 +3,7 @@ package com.javaphite.algo1.stacksandqueues;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -65,5 +66,14 @@ class DequeTest {
         sut.forEach(result::append);
 
         assertEquals("ABC", result.toString());
+    }
+
+    @Test
+    void iteratorShouldSuccedAfterFewIntermizedOperations() {
+        Deque<Integer> deque = new Deque<>();
+        deque.addFirst(1);
+        deque.removeFirst();
+
+        assertDoesNotThrow(() -> { deque.iterator().next();});
     }
 }

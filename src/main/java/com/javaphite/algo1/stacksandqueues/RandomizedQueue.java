@@ -12,9 +12,9 @@ import java.util.function.Consumer;
  */
 public class RandomizedQueue<Item> implements Iterable<Item> {
 
-    private ResizingArray<Item> queue;
-
     private static final int DEFAULT_INITIAL_CAPACITY = 10;
+
+    private ResizingArray<Item> queue;
 
     /**
      * Creates new empty randomized queue.
@@ -98,17 +98,6 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             copyItemsInRandomOrder(items, iterationOrder);
         }
 
-        private void copyItemsInRandomOrder(final ResizingArray<Item> source, ResizingArray<Item> target) {
-            for (int i = 0; i < source.size(); i++) {
-                target.add(source.get(i));
-            }
-
-            int maxIndex = target.size();
-            for (int i = 0; i < maxIndex; i++) {
-                iterationOrder.swapElements(StdRandom.uniform(maxIndex), StdRandom.uniform(maxIndex));
-            }
-        }
-
         @Override
         public void remove() {
             throw new UnsupportedOperationException("Remove not supported by RandomizedQueueIterator");
@@ -133,6 +122,17 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             }
             return iterationOrder.remove(0);
         }
+
+        private void copyItemsInRandomOrder(final ResizingArray<Item> source, ResizingArray<Item> target) {
+            for (int i = 0; i < source.size(); i++) {
+                target.add(source.get(i));
+            }
+
+            int maxIndex = target.size();
+            for (int i = 0; i < maxIndex; i++) {
+                iterationOrder.swapElements(StdRandom.uniform(maxIndex), StdRandom.uniform(maxIndex));
+            }
+        }
     }
 
     private static class ResizingArray<Item> {
@@ -150,7 +150,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             return array[index];
         }
 
-        public void set(int index, Item element) {
+        void set(int index, Item element) {
             validateIndex(index);
             array[index] = element;
         }
@@ -158,7 +158,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         void add(Item element) {
             int newIndex = size;
 
-            if (capacity() < newIndex) {
+            if (capacity() <= newIndex) {
                 resize(capacity() * 2);
             }
 
@@ -174,6 +174,20 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             return removedItem;
         }
 
+        int size() {
+            return size;
+        }
+
+        int capacity() {
+            return array.length;
+        }
+
+        void swapElements(int from, int to) {
+            Item temporary = array[to];
+            array[to] = array[from];
+            array[from] = temporary;
+        }
+
         private void resize(int newCapacity) {
             if (size() <= newCapacity) {
                 Item[] resizedArray = (Item[]) new Object[newCapacity];
@@ -184,24 +198,10 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             }
         }
 
-        int size() {
-            return size;
-        }
-
-        int capacity() {
-            return array.length;
-        }
-
         private void validateIndex(int index) {
             if (0 > index || index >= size) {
                 throw new IndexOutOfBoundsException("" + index);
             }
-        }
-
-        void swapElements(int from, int to) {
-            Item temporary = array[to];
-            array[to] = array[from];
-            array[from] = temporary;
         }
     }
 }
