@@ -99,10 +99,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
 
         private void copyItemsInRandomOrder(final ResizingArray<Item> source, ResizingArray<Item> target) {
-            synchronized (this) {
-                for (int i = 0; i < source.size(); i++) {
-                    target.add(source.get(i));
-                }
+            for (int i = 0; i < source.size(); i++) {
+                target.add(source.get(i));
             }
 
             int maxIndex = target.size();

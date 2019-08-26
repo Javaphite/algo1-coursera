@@ -28,7 +28,7 @@ public class Permutation {
     private static int getNumberOfStringsToPrint(String[] args) {
         try {
             return Integer.parseInt(args[0]);
-        } catch (Exception exception) {
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException exception) {
             return -1;
         }
     }
